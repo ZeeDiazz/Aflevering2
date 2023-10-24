@@ -1,0 +1,50 @@
+.hardware vonNeumann
+
+.inputs Read a0 a1 a2 a3 b0 b1 b2 b3 
+.outputs     s0 s1 s2 s3 Overflow
+
+.latches
+ma0 -> la0
+ma1 -> la1
+ma2 -> la2
+ma3 -> la3
+mb0 -> lb0
+mb1 -> lb1
+mb2 -> lb2
+mb3 -> lb3
+Overflow -> mOverflow
+
+.update
+
+s0 = la0 && !lb0 || !la0 && lb0
+s1 = la1 && !lb1 || !la1 && lb1
+s2 = la2 && !lb2 || !la2 && lb2
+s3 = la3 && !lb3 || !la3 && lb3
+
+c0 = la0 && lb0
+c1 = la1 && lb1
+c2 = la2 && lb2
+c3 = la3 && lb3
+Overflow = c3 || mOverflow && !Read
+
+ma0 = Read && a0 || !Read && s0
+ma1 = Read && a1 || !Read && s1
+ma2 = Read && a2 || !Read && s2
+ma3 = Read && a3 || !Read && s3
+
+mb0 = Read && b0
+mb1 = Read && b1 || !Read && c0
+mb2 = Read && b2 || !Read && c1
+mb3 = Read && b3 || !Read && c2
+
+.simulate
+Read=100000000
+  a0=100000000
+  a1=000000000
+  a2=000000000
+  a3=000000000
+  b0=100000000
+  b1=100000000
+  b2=100000000
+  b3=000000000
+  

@@ -1,0 +1,56 @@
+
+
+
+<!DOCTYPE html>
+<html><head><title> vonNeumann</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script></head><body>
+<h1>vonNeumann</h1>
+<h2> Inputs </h2>
+Read a0 a1 a2 a3 b0 b1 b2 b3 
+ <h2> Outputs </h2>
+ s0 s1 s2 s3 Overflow 
+ <h2> Latches </h2>
+ma0&rarr;la0<br>
+ma1&rarr;la1<br>
+ma2&rarr;la2<br>
+ma3&rarr;la3<br>
+mb0&rarr;lb0<br>
+mb1&rarr;lb1<br>
+mb2&rarr;lb2<br>
+mb3&rarr;lb3<br>
+Overflow&rarr;mOverflow<br>
+
+ <h2> Updates </h2>
+s0&larr;\(((\mathrm{la0}\wedge\neg(\mathrm{lb0}))\vee(\neg(\mathrm{la0})\wedge\mathrm{lb0}))\)<br>
+s1&larr;\(((\mathrm{la1}\wedge\neg(\mathrm{lb1}))\vee(\neg(\mathrm{la1})\wedge\mathrm{lb1}))\)<br>
+s2&larr;\(((\mathrm{la2}\wedge\neg(\mathrm{lb2}))\vee(\neg(\mathrm{la2})\wedge\mathrm{lb2}))\)<br>
+s3&larr;\(((\mathrm{la3}\wedge\neg(\mathrm{lb3}))\vee(\neg(\mathrm{la3})\wedge\mathrm{lb3}))\)<br>
+c0&larr;\((\mathrm{la0}\wedge\mathrm{lb0})\)<br>
+c1&larr;\((\mathrm{la1}\wedge\mathrm{lb1})\)<br>
+c2&larr;\((\mathrm{la2}\wedge\mathrm{lb2})\)<br>
+c3&larr;\((\mathrm{la3}\wedge\mathrm{lb3})\)<br>
+Overflow&larr;\((\mathrm{c3}\vee(\mathrm{mOverflow}\wedge\neg(\mathrm{Read})))\)<br>
+ma0&larr;\(((\mathrm{Read}\wedge\mathrm{a0})\vee(\neg(\mathrm{Read})\wedge\mathrm{s0}))\)<br>
+ma1&larr;\(((\mathrm{Read}\wedge\mathrm{a1})\vee(\neg(\mathrm{Read})\wedge\mathrm{s1}))\)<br>
+ma2&larr;\(((\mathrm{Read}\wedge\mathrm{a2})\vee(\neg(\mathrm{Read})\wedge\mathrm{s2}))\)<br>
+ma3&larr;\(((\mathrm{Read}\wedge\mathrm{a3})\vee(\neg(\mathrm{Read})\wedge\mathrm{s3}))\)<br>
+mb0&larr;\((\mathrm{Read}\wedge\mathrm{b0})\)<br>
+mb1&larr;\(((\mathrm{Read}\wedge\mathrm{b1})\vee(\neg(\mathrm{Read})\wedge\mathrm{c0}))\)<br>
+mb2&larr;\(((\mathrm{Read}\wedge\mathrm{b2})\vee(\neg(\mathrm{Read})\wedge\mathrm{c1}))\)<br>
+mb3&larr;\(((\mathrm{Read}\wedge\mathrm{b3})\vee(\neg(\mathrm{Read})\wedge\mathrm{c2}))\)<br>
+
+ <h2> Simulation inputs </h2>
+<b>Read</b>: 100000000<br>
+<b>a0</b>: 100000000<br>
+<b>a1</b>: 000000000<br>
+<b>a2</b>: 000000000<br>
+<b>a3</b>: 000000000<br>
+<b>b0</b>: 100000000<br>
+<b>b1</b>: 100000000<br>
+<b>b2</b>: 100000000<br>
+<b>b3</b>: 000000000<br>
+
+</body></html>
+

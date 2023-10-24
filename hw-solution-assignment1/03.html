@@ -1,0 +1,32 @@
+
+
+
+<!DOCTYPE html>
+<html><head><title> trafiklys</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script></head><body>
+<h1>trafiklys</h1>
+<h2> Inputs </h2>
+Button 
+ <h2> Outputs </h2>
+ Red Yel Green PRed PGreen 
+ <h2> Latches </h2>
+Red&rarr;RedM<br>
+Yel&rarr;YelM<br>
+Req&rarr;ReqM<br>
+
+ <h2> Updates </h2>
+Clr&larr;\((\mathrm{RedM}\wedge\neg(\mathrm{YelM}))\)<br>
+Req&larr;\(((\mathrm{ReqM}\vee\mathrm{Button})\wedge\neg(\mathrm{Clr}))\)<br>
+Red&larr;\(((\neg(\mathrm{RedM})\wedge\mathrm{YelM})\vee(\mathrm{RedM}\wedge\neg(\mathrm{YelM})))\)<br>
+Yel&larr;\((((\neg(\mathrm{RedM})\wedge\neg(\mathrm{YelM}))\wedge\mathrm{Req})\vee(\mathrm{RedM}\wedge\neg(\mathrm{YelM})))\)<br>
+Green&larr;\((\neg(\mathrm{Red})\wedge\neg(\mathrm{Yel}))\)<br>
+PGreen&larr;\((\mathrm{Red}\wedge\neg(\mathrm{Yel}))\)<br>
+PRed&larr;\(\neg(\mathrm{PGreen})\)<br>
+
+ <h2> Simulation inputs </h2>
+<b>Button</b>: 001001111001<br>
+
+</body></html>
+

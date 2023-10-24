@@ -1,0 +1,15 @@
+.hardware helloworld
+
+.inputs Reset
+.outputs Oscillator
+
+.latches
+Oscillator -> OscillatorM
+
+.update
+
+Oscillator = !OscillatorM && !Reset
+
+.simulate
+Reset=0000100
+

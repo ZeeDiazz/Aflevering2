@@ -1,0 +1,28 @@
+.hardware trafiklys
+
+// Minimal trafiklys eksempel.
+
+.inputs Button
+.outputs Red Green PRed PGreen
+
+.latches
+Red -> RedM
+
+.update
+
+Red = !RedM && Button
+Green  = !Red 
+PGreen = Red 
+PRed   = !PGreen
+
+.simulate Button=1100110111
+
+/* The simulator output should look something like this:
+
+1100110111 Button
+1000100101 Red
+0111011010 Green
+0111011010 PRed
+1000100101 PGreen
+
+*/
