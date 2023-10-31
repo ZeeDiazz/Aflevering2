@@ -21,6 +21,11 @@ abstract class Expr extends AST{}
 class Conjunction extends Expr{
     Expr e1,e2;
     Conjunction(Expr e1,Expr e2){this.e1=e1; this.e2=e2;}
+
+    public boolean eval(){
+
+        return true;
+    }
 }
 
 class Disjunction extends Expr{
