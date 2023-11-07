@@ -86,6 +86,12 @@ class Latch extends AST {
         this.inputname = inputname;
         this.outputname = outputname;
     }
+    public void initialize(Environment env){
+        env.setVariable(outputname,false);
+    }
+    public void nextCycle(Environment env){
+        env.setVariable(outputname, env.getVariable(inputname));
+    }
 }
 
 // An Update is any of the lines " signal = expression "
