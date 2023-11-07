@@ -175,4 +175,51 @@ class Circuit extends AST {
         this.updates = updates;
         this.siminputs = siminputs;
     }
+
+    public void initialize(Environment env){
+        for (Trace t: siminputs) {
+            if(t.values.length == 0 || t.signal == null){
+                continue;
+            }
+            env.setVariable(t.signal, t.values[0]);
+        }
+
+        for (Latch latch: latches){
+            latch.initialize(env);
+        }
+
+        for(Update update: updates){
+            update.eval(env);
+        }
+
+        /*for (Trace t: simoutputs) {
+            env.setVariable(t.signal, t.values[0]);
+        }*/
+        System.out.println(env.toString());
+    }
+    public void nextCycle(Environment env){
+        for (int i = 0; i < siminputs.size(); i++) {
+            env.setVariable(siminputs.get(i).signal, siminputs.get(i).values[i]);
+        }
+
+        for (Latch latch: latches){
+            latch.nextCycle(env);
+        }
+
+        for(Update update: updates){
+            update.eval(env);
+        }
+
+        /*for (int i = 0; i < simoutputs.size(); i++) {
+            env.setVariable(simoutputs.get(i).signal, simoutputs.get(i).values[i]);
+        }*/
+        System.out.println(env.toString());
+    }
+    public void runSimulator() {
+        Environment environment = new Environment();
+        initialize(environment);
+        for (int i = 0; i < siminputs.size(); i++) {
+            nextCycle(environment);
+        }
+    }
 }
