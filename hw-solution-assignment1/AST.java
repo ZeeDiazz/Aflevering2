@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -159,7 +160,7 @@ class Circuit extends AST {
     List<Latch> latches;
     List<Update> updates;
     List<Trace> siminputs;
-    List<Trace> simoutputs;
+    List<Trace> simoutputs = new ArrayList<Trace>();
     int simlength;
 
     Circuit(String name,
@@ -192,9 +193,9 @@ class Circuit extends AST {
             update.eval(env);
         }
 
-        /*for (Trace t: simoutputs) {
+        for (Trace t: simoutputs) {
             env.setVariable(t.signal, t.values[0]);
-        }*/
+        }
         System.out.println(env.toString());
     }
     public void nextCycle(Environment env){
@@ -210,9 +211,9 @@ class Circuit extends AST {
             update.eval(env);
         }
 
-        /*for (int i = 0; i < simoutputs.size(); i++) {
+        for (int i = 0; i < simoutputs.size(); i++) {
             env.setVariable(simoutputs.get(i).signal, simoutputs.get(i).values[i]);
-        }*/
+        }
         System.out.println(env.toString());
     }
     public void runSimulator() {
