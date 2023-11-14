@@ -1,9 +1,9 @@
 ##### If you have not installed ANTLR in your classpath, you still need to copy antlr-4.13.0-complete.jar to this folder and set up the classpath option:
 
 #classpathoption = -cp 'antlr-4.13.0-complete.jar:.'  # if you are using mac/linux
-#classpathoption = -cp 'antlr-4.13.0-complete.jar;.'  # if you are using windows
+classpathoption = -cp 'antlr-4.13.0-complete.jar;.'  # if you are using windows
 
-classpathoption =   # nothing if already installed
+#classpathoption =   # nothing if already installed
 
 
 antlr4 = java $(classpathoption) org.antlr.v4.Tool

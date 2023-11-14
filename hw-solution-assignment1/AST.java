@@ -179,7 +179,7 @@ class Circuit extends AST {
             List<String> outputs,
             List<Latch> latches,
             List<Update> updates,
-            List<Trace> siminputs) {
+            List<Trace> siminputs){
         this.name = name;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -236,6 +236,10 @@ class Circuit extends AST {
         }
         System.out.println(env.toString());
     }
+    private void runSimulatior(){
+        // Implementer logik for at kontrollere, om der er cykliske opdateringer
+        // Brug isUpdateOutput-metoden fra punkt 1 for at kontrollere, at opdateringer kun bruger gyldige signaler.
+    }
 
     public void runSimulator() {
         Environment environment = new Environment();
@@ -250,6 +254,38 @@ class Circuit extends AST {
         for (Trace t : simoutputs) {
             System.out.println(t.toString());
         }
+        checkSignalTypes();
 
+        Environment environment2 = new Environment();
+        initialize(environment2);
+
+        for (int i = 1; i < simlength; i++) {
+            nextCycle(environment, i);
+        }
+    }
+    private void checkSignalTypes(){
+            for (String signal : inputs) {
+                if (!outputs.contains(signal) && !isLatchOutput(signal) && !isUpdateOutput(signal)) {
+                    error("Error: Signal '" + signal + "' is not an input, latch output, or update output.");
+                }
+            }
+        }
+        private boolean isLatchOutput(String signal) {
+            for (Latch latch : latches) {
+                if (latch.outputname.equals(signal)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    private boolean isUpdateOutput(String signal) {
+        for (Update update : updates) {
+            if (update.name.equals(signal)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
+
+
