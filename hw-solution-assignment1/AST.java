@@ -130,7 +130,8 @@ class Trace extends AST {
 
     //print the num and handle
     public String toString() {
-        return " Signal: " + this.signal + " Values: " + Arrays.toString(this.values);
+
+        return Arrays.toString(this.values).replace("false","0").replace("true","1").replace("[","").replace("]","").replace(", ","") + " " + this.signal;
     }
 }
 
@@ -160,7 +161,7 @@ class Circuit extends AST {
     List<Latch> latches;
     List<Update> updates;
     List<Trace> siminputs;
-    List<Trace> simoutputs = new ArrayList<Trace>();
+    List<Trace> simoutputs;
     int simlength;
 
     Circuit(String name,
@@ -175,6 +176,13 @@ class Circuit extends AST {
         this.latches = latches;
         this.updates = updates;
         this.siminputs = siminputs;
+        this.simoutputs = new ArrayList<Trace>();
+
+        simlength = siminputs.get(0).values.length;
+
+        for (String out: outputs){
+            simoutputs.add(new Trace(out, new Boolean[simlength]));
+        }
     }
 
     public void initialize(Environment env){
@@ -194,13 +202,14 @@ class Circuit extends AST {
         }
 
         for (Trace t: simoutputs) {
-            env.setVariable(t.signal, t.values[0]);
+            t.values[0] = env.getVariable(t.signal);
         }
         System.out.println(env.toString());
     }
-    public void nextCycle(Environment env){
-        for (int i = 0; i < siminputs.size(); i++) {
-            env.setVariable(siminputs.get(i).signal, siminputs.get(i).values[i]);
+    public void nextCycle(Environment env,int i){
+
+        for (Trace t: siminputs) {
+            env.setVariable(t.signal, t.values[i]);
         }
 
         for (Latch latch: latches){
@@ -211,16 +220,24 @@ class Circuit extends AST {
             update.eval(env);
         }
 
-        for (int i = 0; i < simoutputs.size(); i++) {
-            env.setVariable(simoutputs.get(i).signal, simoutputs.get(i).values[i]);
+        for (Trace t: simoutputs) {
+            t.values[i] = env.getVariable(t.signal);
         }
         System.out.println(env.toString());
     }
     public void runSimulator() {
         Environment environment = new Environment();
         initialize(environment);
-        for (int i = 0; i < siminputs.size(); i++) {
-            nextCycle(environment);
+        for (int i = 1; i < simlength; i++) {
+            nextCycle(environment,i);
         }
+        for (Trace t: siminputs) {
+            System.out.println(t.toString());
+        }
+
+        for (Trace t: simoutputs) {
+            System.out.println(t.toString());
+        }
+
     }
 }
