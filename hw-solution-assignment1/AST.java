@@ -176,14 +176,16 @@ class Circuit extends AST {
     int simlength;
 
     HashSet<String> signalNames = new HashSet<>();
+    HashSet<String> duplicates = new HashSet<>();
     List<String> outputNameLatches = new ArrayList<>();
     List<String> nameUpdates = new ArrayList<>();
+
     Circuit(String name,
             List<String> inputs,
             List<String> outputs,
             List<Latch> latches,
             List<Update> updates,
-            List<Trace> siminputs){
+            List<Trace> siminputs) {
         this.name = name;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -192,16 +194,7 @@ class Circuit extends AST {
         this.siminputs = siminputs;
         this.simoutputs = new ArrayList<>();
 
-        for(Latch latch : this.latches){
-            outputNameLatches.add(latch.outputname);
-        }
-        for(Update update : this.updates){
-            nameUpdates.add(update.name);
-        }
-
-        signalNames.addAll(this.inputs);
-        signalNames.addAll(outputNameLatches);
-        signalNames.addAll(nameUpdates);
+        updateListsForErrorhandling();
 
         simlength = siminputs.get(0).values.length;
         for (String out : outputs) {
@@ -250,6 +243,7 @@ class Circuit extends AST {
         }
         System.out.println(env.toString());
     }
+
     public void runSimulator() {
         Environment environment = new Environment();
         initialize(environment);
@@ -264,11 +258,16 @@ class Circuit extends AST {
             System.out.println(t.toString());
         }
 
-        if(signalNames.size() != inputs.size() + outputNameLatches.size() + nameUpdates.size()){
-            error("Error: There is a duplicate Signal");
+        if (signalNames.size() != inputs.size() + outputNameLatches.size() + nameUpdates.size()) {
+            error("Error: There is 1 or more duplicate Signals which are:\n" +
+                    duplicates);
         }
-        if(signalNames.isEmpty() /*ZACH LAV DET TAK!*/){
-            error("Error: Signal is not an input, latch output, or update output.");
+
+        for (Trace siminput : siminputs) {
+            if (!signalNames.contains(siminput.signal)) {
+                error("Error: Signal " + siminput.signal + " is not an input, latch output, or update output.");
+                break;
+            }
         }
 
         for (int i = 1; i < simlength; i++) {
@@ -276,14 +275,17 @@ class Circuit extends AST {
         }
     }
 
-    private boolean isSignalAType(){
+    // Er ikke sikker på om skal bruges???
+    /*
+    private boolean isSignalAType() {
         for (String signal : inputs) {
             if (!isLatchOutput(signal) && !isUpdateOutput(signal)) {
-               return false;
+                return false;
             }
         }
         return true;
     }
+    
     private boolean isLatchOutput(String signal) {
         for (Latch latch : latches) {
             if (latch.outputname.equals(signal)) {
@@ -292,6 +294,7 @@ class Circuit extends AST {
         }
         return false;
     }
+    
     private boolean isUpdateOutput(String signal) {
         for (Update update : updates) {
             if (update.name.equals(signal)) {
@@ -299,6 +302,34 @@ class Circuit extends AST {
             }
         }
         return false;
+    }
+    */
+
+    private void updateListsForErrorhandling() {
+        for (Latch latch : this.latches) {
+            outputNameLatches.add(latch.outputname);
+        }
+        for (Update update : this.updates) {
+            nameUpdates.add(update.name);
+        }
+
+        for (String input : this.inputs) {
+            if (!signalNames.add(input)) {
+                duplicates.add(input);
+            }
+        }
+
+        for (String outputNameLatch : this.outputNameLatches) {
+            if (!signalNames.add(outputNameLatch)) {
+                duplicates.add(outputNameLatch);
+            }
+        }
+
+        for (String nameUpdates : this.nameUpdates) {
+            if (!signalNames.add(nameUpdates)) {
+                duplicates.add(nameUpdates);
+            }
+        }
     }
 }
 
