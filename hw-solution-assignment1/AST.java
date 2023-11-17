@@ -236,11 +236,6 @@ class Circuit extends AST {
         }
         System.out.println(env.toString());
     }
-    private void runSimulatior(){
-        // Implementer logik for at kontrollere, om der er cykliske opdateringer
-        // Brug isUpdateOutput-metoden fra punkt 1 for at kontrollere, at opdateringer kun bruger gyldige signaler.
-    }
-
     public void runSimulator() {
         Environment environment = new Environment();
         initialize(environment);
