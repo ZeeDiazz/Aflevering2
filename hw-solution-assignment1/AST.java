@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class AST {
@@ -174,6 +175,9 @@ class Circuit extends AST {
     List<Trace> simoutputs;
     int simlength;
 
+    HashSet<String> signalNames = new HashSet<>();
+    List<String> outputNameLatches = new ArrayList<>();
+    List<String> nameUpdates = new ArrayList<>();
     Circuit(String name,
             List<String> inputs,
             List<String> outputs,
@@ -186,10 +190,20 @@ class Circuit extends AST {
         this.latches = latches;
         this.updates = updates;
         this.siminputs = siminputs;
-        this.simoutputs = new ArrayList<Trace>();
+        this.simoutputs = new ArrayList<>();
+
+        for(Latch latch : this.latches){
+            outputNameLatches.add(latch.outputname);
+        }
+        for(Update update : this.updates){
+            nameUpdates.add(update.name);
+        }
+
+        signalNames.addAll(this.inputs);
+        signalNames.addAll(outputNameLatches);
+        signalNames.addAll(nameUpdates);
 
         simlength = siminputs.get(0).values.length;
-
         for (String out : outputs) {
             simoutputs.add(new Trace(out, new Boolean[simlength]));
         }
@@ -249,30 +263,35 @@ class Circuit extends AST {
         for (Trace t : simoutputs) {
             System.out.println(t.toString());
         }
-        checkSignalTypes();
 
-        Environment environment2 = new Environment();
-        initialize(environment2);
+        if(signalNames.size() != inputs.size() + outputNameLatches.size() + nameUpdates.size()){
+            error("Error: There is a duplicate Signal");
+        }
+        if(signalNames.isEmpty() /*ZACH LAV DET TAK!*/){
+            error("Error: Signal is not an input, latch output, or update output.");
+        }
 
         for (int i = 1; i < simlength; i++) {
             nextCycle(environment, i);
         }
     }
-    private void checkSignalTypes(){
-            for (String signal : inputs) {
-                if (!outputs.contains(signal) && !isLatchOutput(signal) && !isUpdateOutput(signal)) {
-                    error("Error: Signal '" + signal + "' is not an input, latch output, or update output.");
-                }
+
+    private boolean isSignalAType(){
+        for (String signal : inputs) {
+            if (!isLatchOutput(signal) && !isUpdateOutput(signal)) {
+               return false;
             }
         }
-        private boolean isLatchOutput(String signal) {
-            for (Latch latch : latches) {
-                if (latch.outputname.equals(signal)) {
-                    return true;
-                }
+        return true;
+    }
+    private boolean isLatchOutput(String signal) {
+        for (Latch latch : latches) {
+            if (latch.outputname.equals(signal)) {
+                return true;
             }
-            return false;
         }
+        return false;
+    }
     private boolean isUpdateOutput(String signal) {
         for (Update update : updates) {
             if (update.name.equals(signal)) {
