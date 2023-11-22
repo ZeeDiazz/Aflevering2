@@ -309,7 +309,6 @@ class Circuit extends AST {
         for (Trace t : simoutputs) {
             t.values[i] = env.getVariable(t.signal);
         }
-        System.out.println(env.toString());
     }
 
     public void runSimulator() {
