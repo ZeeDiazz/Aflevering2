@@ -169,16 +169,22 @@ class Trace extends AST {
         this.signal = signal;
         this.values = values;
     }
-
     //print the num and handle
     public String toString() {
-
+        /*
         return Arrays.toString(this.values)
                 .replace("false", "0")
                 .replace("true", "1")
                 .replace("[", "")
                 .replace("]", "")
-                .replace(", ", "") + " " + this.signal;
+                .replace(", ", "") + " " + this.signal;*/
+
+        StringBuilder text = new StringBuilder();
+        for (int i = 0; i < values.length; i++) {
+            text.append(values[i] ? 1 : 0);
+        }
+
+        return  text + " " + this.signal;
     }
 }
 
