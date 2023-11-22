@@ -289,7 +289,7 @@ class Circuit extends AST {
         for (Trace t : simoutputs) {
             t.values[0] = env.getVariable(t.signal);
         }
-        System.out.println(env.toString());
+        //System.out.println(env.toString());
     }
 
     public void nextCycle(Environment env, int i) {
@@ -318,11 +318,11 @@ class Circuit extends AST {
             nextCycle(environment, i);
         }
         for (Trace t : siminputs) {
-            System.out.println(t.toString());
+            System.out.println("<br>" + t.toString());
         }
 
         for (Trace t : simoutputs) {
-            System.out.println(t.toString());
+            System.out.println("<br>" + t.toString());
         }
 
         if (signalNames.size() != inputs.size() + outputNameLatches.size() + nameUpdates.size()) {
