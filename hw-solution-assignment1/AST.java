@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+
 public abstract class AST {
     public void error(String msg) {
         System.err.println(msg);
@@ -20,6 +21,9 @@ abstract class Expr extends AST {
 
     public abstract Boolean eval(Environment env);
 
+    public abstract List<String> getSignalNames();
+
+
 }
 
 class Conjunction extends Expr {
@@ -33,6 +37,16 @@ class Conjunction extends Expr {
     @Override
     public Boolean eval(Environment env) {
         return e1.eval(env) && e2.eval(env);
+    }
+
+    @Override
+    public List<String> getSignalNames() {
+
+        List<String> list = e1.getSignalNames();
+        list.addAll(e2.getSignalNames());
+
+
+        return list;
     }
 
 }
@@ -50,6 +64,16 @@ class Disjunction extends Expr {
         return e1.eval(env) || e2.eval(env);
     }
 
+    @Override
+    public List<String> getSignalNames() {
+
+        List<String> list = e1.getSignalNames();
+        list.addAll(e2.getSignalNames());
+
+
+        return list;
+    }
+
 
 }
 
@@ -65,6 +89,11 @@ class Negation extends Expr {
         return !e.eval(env);
     }
 
+    @Override
+    public List<String> getSignalNames() {
+        return e.getSignalNames();
+    }
+
 }
 
 class Signal extends Expr {
@@ -77,6 +106,13 @@ class Signal extends Expr {
     @Override
     public Boolean eval(Environment env) {
         return env.getVariable(varname);
+    }
+
+    @Override
+    public List<String> getSignalNames() {
+        List<String> list = new ArrayList<>();
+        list.add(varname);
+        return list;
     }
 
 }
@@ -194,13 +230,36 @@ class Circuit extends AST {
         this.siminputs = siminputs;
         this.simoutputs = new ArrayList<>();
 
-        updateListsForErrorhandling();
+        for (Latch latch : this.latches) {
+            outputNameLatches.add(latch.outputname);
+        }
+        for (Update update : this.updates) {
+            nameUpdates.add(update.name);
+        }
 
+        for (String input : this.inputs) {
+            if (!signalNames.add(input)) {
+                duplicates.add(input);
+            }
+        }
+
+        for (String outputNameLatch : this.outputNameLatches) {
+            if (!signalNames.add(outputNameLatch)) {
+                duplicates.add(outputNameLatch);
+            }
+        }
+
+        for (String nameUpdates : this.nameUpdates) {
+            if (!signalNames.add(nameUpdates)) {
+                duplicates.add(nameUpdates);
+            }
+        }
         simlength = siminputs.get(0).values.length;
         for (String out : outputs) {
             simoutputs.add(new Trace(out, new Boolean[simlength]));
         }
     }
+
 
     public void initialize(Environment env) {
         for (Trace t : siminputs) {
@@ -213,9 +272,18 @@ class Circuit extends AST {
         for (Latch latch : latches) {
             latch.initialize(env);
         }
+        HashSet<String> legalSignals = new HashSet<>();
+        legalSignals.addAll(inputs);
+        legalSignals.addAll(outputNameLatches);
+
 
         for (Update update : updates) {
-            update.eval(env);
+            if (legalSignals.containsAll(update.e.getSignalNames())) {
+                update.eval(env);
+                legalSignals.add(update.name);
+            } else {
+                error("Update signal " + update.name + " hasn't been defined and may be cyclical");
+            }
         }
 
         for (Trace t : simoutputs) {
@@ -272,63 +340,6 @@ class Circuit extends AST {
 
         for (int i = 1; i < simlength; i++) {
             nextCycle(environment, i);
-        }
-    }
-
-    // Er ikke sikker på om skal bruges???
-    /*
-    private boolean isSignalAType() {
-        for (String signal : inputs) {
-            if (!isLatchOutput(signal) && !isUpdateOutput(signal)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isLatchOutput(String signal) {
-        for (Latch latch : latches) {
-            if (latch.outputname.equals(signal)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isUpdateOutput(String signal) {
-        for (Update update : updates) {
-            if (update.name.equals(signal)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    */
-
-    private void updateListsForErrorhandling() {
-        for (Latch latch : this.latches) {
-            outputNameLatches.add(latch.outputname);
-        }
-        for (Update update : this.updates) {
-            nameUpdates.add(update.name);
-        }
-
-        for (String input : this.inputs) {
-            if (!signalNames.add(input)) {
-                duplicates.add(input);
-            }
-        }
-
-        for (String outputNameLatch : this.outputNameLatches) {
-            if (!signalNames.add(outputNameLatch)) {
-                duplicates.add(outputNameLatch);
-            }
-        }
-
-        for (String nameUpdates : this.nameUpdates) {
-            if (!signalNames.add(nameUpdates)) {
-                duplicates.add(nameUpdates);
-            }
         }
     }
 }
