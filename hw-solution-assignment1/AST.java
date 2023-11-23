@@ -332,8 +332,7 @@ class Circuit extends AST {
         }
 
         if (signalNames.size() != inputs.size() + outputNameLatches.size() + nameUpdates.size()) {
-            error("Error: There is 1 or more duplicate Signals which are:\n" +
-                    duplicates);
+            error("Error: There is 1 or more duplicate Signals which are:\n" + duplicates);
         }
 
         for (Trace siminput : siminputs) {
@@ -342,10 +341,9 @@ class Circuit extends AST {
                 break;
             }
         }
-
-        for (int i = 1; i < simlength; i++) {
+        /*for (int i = 1; i < simlength; i++) {
             nextCycle(environment, i);
-        }
+        }*/
     }
 }
 
